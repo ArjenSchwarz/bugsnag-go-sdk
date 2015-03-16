@@ -30,9 +30,14 @@ func (c *Connection) User() (User, error) {
 	return resp, nil
 }
 
-func (c *Connection) Users(object UserList) ([]User, error) {
+func (c *Connection) Users(object UserList, params Parameters) ([]User, error) {
 	var resp []User
-	err := c.client.Query("GET", object.UserListUrl(), &resp)
+	paramString, err := params.paramString()
+	if err != nil {
+		return nil, err
+	}
+	url := fmt.Sprintf("%s%s", object.UserListUrl(), paramString)
+	err = c.client.Query("GET", url, &resp)
 
 	if err != nil {
 		return resp, err

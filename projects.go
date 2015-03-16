@@ -20,9 +20,14 @@ type Project struct {
 	Url           string   `json:"url"`
 }
 
-func (c *Connection) Projects(object ProjectsList) ([]Project, error) {
+func (c *Connection) Projects(object ProjectsList, params Parameters) ([]Project, error) {
 	var resp []Project
-	err := c.client.Query("GET", object.ProjectsListUrl(), &resp)
+	paramString, err := params.paramString()
+	if err != nil {
+		return nil, err
+	}
+	url := fmt.Sprintf("%s%s", object.ProjectsListUrl(), paramString)
+	err = c.client.Query("GET", url, &resp)
 	if err != nil {
 		return nil, err
 	}

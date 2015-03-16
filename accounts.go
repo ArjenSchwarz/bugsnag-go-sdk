@@ -17,9 +17,14 @@ type Account struct {
 	UpdatedAt      jTime  `json:"updated_at"`
 }
 
-func (c *Connection) Accounts() ([]Account, error) {
+func (c *Connection) Accounts(params Parameters) ([]Account, error) {
 	var resp []Account
-	err := c.client.Query("GET", "/accounts", &resp)
+	paramString, err := params.paramString()
+	if err != nil {
+		return nil, err
+	}
+	url := fmt.Sprintf("/accounts%s", paramString)
+	err = c.client.Query("GET", url, &resp)
 	if err != nil {
 		return nil, err
 	}
